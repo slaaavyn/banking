@@ -76,8 +76,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePassword(long userId, UpdateUserPasswordDto passwordDto) {
-        return false;
+    public void updatePassword(long userId, UpdateUserPasswordDto passwordDto) {
+        User user = getUser(userId);
+
+        if (!passwordEncoder.matches(passwordDto.getOldPassword(), user.getPassword())){
+            throw new ConflictException("current password not matches");
+        }
+
+        user.setPassword(passwordEncoder.encode(passwordDto.getNewPassword()));
+        userRepository.save(user);
     }
 
     @Override

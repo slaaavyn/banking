@@ -16,7 +16,7 @@ public interface UserService {
 
     List<User> getAllCustomers();
 
-    boolean updatePassword(long userId, UpdateUserPasswordDto passwordDto);
+    void updatePassword(long userId, UpdateUserPasswordDto passwordDto);
 
     void deleteUser(long userId);
 }

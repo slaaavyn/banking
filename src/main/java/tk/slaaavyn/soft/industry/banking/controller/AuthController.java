@@ -17,6 +17,7 @@ import tk.slaaavyn.soft.industry.banking.security.jwt.JwtTokenProvider;
 import tk.slaaavyn.soft.industry.banking.security.jwt.JwtUser;
 import tk.slaaavyn.soft.industry.banking.service.UserService;
 
+import javax.validation.Valid;
 import java.util.Collections;
 import java.util.Date;
 
@@ -51,18 +52,9 @@ public class AuthController {
 
     @PutMapping("/update-password/{id}")
     protected ResponseEntity<Object> updatePassword(@PathVariable(name = "id") Long id,
-                                                 @RequestBody UpdateUserPasswordDto passwordDto) {
-
+                                                    @Valid @RequestBody UpdateUserPasswordDto passwordDto) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        if (JwtUser.userHasAuthority(jwtUser.getAuthorities(), Role.ROLE_USER.name()) && !jwtUser.getId().equals(id)) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        boolean isSuccess = userService.updatePassword(id, passwordDto);
-
-        if (!isSuccess) {
-            return ResponseEntity.badRequest().build();
-        }
+        userService.updatePassword(jwtUser.getId(), passwordDto);
 
         return ResponseEntity.ok().build();
     }
