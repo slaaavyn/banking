@@ -15,7 +15,7 @@ public class BalanceResponseDto {
         BalanceResponseDto dto = new BalanceResponseDto();
 
         dto.setId(balance.getId());
-        dto.setDeposit(balance.getDeposit());
+        dto.setDeposit(balance.getDeposit() / 100);
         dto.setCustomerId(balance.getCustomer().getId());
         dto.setCurrencyType(balance.getCurrencyType());
 

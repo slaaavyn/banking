@@ -37,11 +37,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 /* AUTH */
+                .antMatchers(EndpointConstants.AUTH_ENDPOINT + "/update-password/**").authenticated()
                 .antMatchers(EndpointConstants.AUTH_ENDPOINT + "/**").permitAll()
 
                 /* USER */
                 .antMatchers(EndpointConstants.USER_ENDPOINT + "/customer-info").hasRole("USER")
                 .antMatchers(EndpointConstants.USER_ENDPOINT + "/**").hasRole("ADMIN")
+
+                /* BALANCE */
+                .antMatchers(HttpMethod.GET,EndpointConstants.BALANCE_ENDPOINT + "/**").authenticated()
+                .antMatchers(EndpointConstants.BALANCE_ENDPOINT + "/**").hasRole("ADMIN")
 
                 .anyRequest().authenticated()
                 .and()
