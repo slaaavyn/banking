@@ -10,7 +10,6 @@ import tk.slaaavyn.soft.industry.banking.dto.auth.AuthRequestDto;
 import tk.slaaavyn.soft.industry.banking.dto.auth.AuthResponseDto;
 import tk.slaaavyn.soft.industry.banking.dto.user.UpdateUserPasswordDto;
 import tk.slaaavyn.soft.industry.banking.dto.user.UserResponseDto;
-import tk.slaaavyn.soft.industry.banking.model.Role;
 import tk.slaaavyn.soft.industry.banking.model.User;
 import tk.slaaavyn.soft.industry.banking.security.SecurityConstants;
 import tk.slaaavyn.soft.industry.banking.security.jwt.JwtTokenProvider;

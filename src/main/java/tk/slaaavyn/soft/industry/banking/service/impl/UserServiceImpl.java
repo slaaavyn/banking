@@ -3,6 +3,7 @@ package tk.slaaavyn.soft.industry.banking.service.impl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import tk.slaaavyn.soft.industry.banking.dto.user.UpdateUserPasswordDto;
+import tk.slaaavyn.soft.industry.banking.exceptions.ApiRequestException;
 import tk.slaaavyn.soft.industry.banking.exceptions.ConflictException;
 import tk.slaaavyn.soft.industry.banking.exceptions.NotFoundException;
 import tk.slaaavyn.soft.industry.banking.model.Role;
@@ -80,6 +81,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(long userId) {
-        userRepository.delete(getUser(userId));
+        User user = getUser(userId);
+
+        if (user.getRole() == Role.ROLE_ADMIN && getAllAdmins().size() == 1) {
+            throw new ApiRequestException("it is not possible to remove a single administrator");
+        }
+
+        userRepository.delete(user);
     }
 }
