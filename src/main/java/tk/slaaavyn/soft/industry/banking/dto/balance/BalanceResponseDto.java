@@ -4,19 +4,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import tk.slaaavyn.soft.industry.banking.model.Balance;
 import tk.slaaavyn.soft.industry.banking.model.CurrencyType;
 
+import java.math.BigDecimal;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BalanceResponseDto {
     private Long id;
-    private Long deposit;
-    private Long customerId;
+    private BigDecimal deposit;
+    private Long userId;
     private CurrencyType currencyType;
 
     public static BalanceResponseDto toDto(Balance balance) {
         BalanceResponseDto dto = new BalanceResponseDto();
 
         dto.setId(balance.getId());
-        dto.setDeposit(balance.getDeposit() / 100);
-        dto.setCustomerId(balance.getCustomer().getId());
+        dto.setDeposit(balance.getDeposit());
+        dto.setUserId(balance.getUser().getId());
         dto.setCurrencyType(balance.getCurrencyType());
 
         return dto;
@@ -30,20 +32,20 @@ public class BalanceResponseDto {
         this.id = id;
     }
 
-    public Long getDeposit() {
+    public BigDecimal getDeposit() {
         return deposit;
     }
 
-    public void setDeposit(Long deposit) {
+    public void setDeposit(BigDecimal deposit) {
         this.deposit = deposit;
     }
 
-    public Long getCustomerId() {
-        return customerId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public CurrencyType getCurrencyType() {
@@ -59,7 +61,7 @@ public class BalanceResponseDto {
         return "BalanceResponseDto{" +
                 "id=" + id +
                 ", deposit=" + deposit +
-                ", customerId=" + customerId +
+                ", userId=" + userId +
                 ", currencyType=" + currencyType +
                 '}';
     }

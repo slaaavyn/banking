@@ -48,6 +48,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,EndpointConstants.BALANCE_ENDPOINT + "/**").authenticated()
                 .antMatchers(EndpointConstants.BALANCE_ENDPOINT + "/**").hasRole("ADMIN")
 
+                /* TRANSACTION */
+                .antMatchers(HttpMethod.POST,EndpointConstants.TRANSACTION_ENDPOINT + "/deposit").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET,EndpointConstants.TRANSACTION_ENDPOINT + "/**").hasRole("USER")
+                .antMatchers(EndpointConstants.TRANSACTION_ENDPOINT + "/**").authenticated()
+
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

@@ -5,10 +5,8 @@ import org.springframework.stereotype.Service;
 import tk.slaaavyn.soft.industry.banking.dto.user.UpdateUserPasswordDto;
 import tk.slaaavyn.soft.industry.banking.exceptions.ConflictException;
 import tk.slaaavyn.soft.industry.banking.exceptions.NotFoundException;
-import tk.slaaavyn.soft.industry.banking.model.Customer;
 import tk.slaaavyn.soft.industry.banking.model.Role;
 import tk.slaaavyn.soft.industry.banking.model.User;
-import tk.slaaavyn.soft.industry.banking.repostitory.CustomerRepository;
 import tk.slaaavyn.soft.industry.banking.repostitory.UserRepository;
 import tk.slaaavyn.soft.industry.banking.service.UserService;
 
@@ -18,13 +16,10 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, CustomerRepository customerRepository,
-                           BCryptPasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -35,10 +30,6 @@ public class UserServiceImpl implements UserService {
         }
 
         incomingUser.setPassword(passwordEncoder.encode(incomingUser.getPassword()));
-
-        if(incomingUser.getRole() == Role.ROLE_USER) {
-            return customerRepository.save(new Customer(incomingUser));
-        }
 
         return userRepository.save(incomingUser);
     }

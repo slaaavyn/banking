@@ -9,6 +9,7 @@ import tk.slaaavyn.soft.industry.banking.repostitory.BalanceRepository;
 import tk.slaaavyn.soft.industry.banking.service.BalanceService;
 import tk.slaaavyn.soft.industry.banking.service.UserService;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -23,21 +24,21 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
-    public Balance create(Long customerId, CurrencyType currencyType) {
-        User user = userService.getUser(customerId);
+    public Balance create(Long userId, CurrencyType currencyType) {
+        User user = userService.getUser(userId);
 
         if(user.getRole() != Role.ROLE_USER) {
             throw new ApiRequestException("this user is not a customer");
         }
 
-        if(balanceRepository.findByCustomer_IdAndCurrencyType(user.getId(), currencyType) != null) {
+        if(balanceRepository.findByUser_IdAndCurrencyType(user.getId(), currencyType) != null) {
             throw new ConflictException("balance with currency type: " + currencyType + " already exist in this customer");
         }
 
         Balance balance = new Balance();
-        balance.setCustomer((Customer) user);
+        balance.setUser(user);
         balance.setCurrencyType(currencyType);
-        balance.setDeposit(0L);
+        balance.setDeposit(BigDecimal.ZERO);
 
         return balanceRepository.save(balance);
     }
@@ -54,15 +55,47 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
-    public List<Balance> getALlCustomerBalances(long customerId) {
-        return balanceRepository.findAllByCustomer_Id(customerId);
+    public List<Balance> getALlCustomerBalances(long userId) {
+        return balanceRepository.findAllByUser_Id(userId);
+    }
+
+    @Override
+    public void makeWithdraw(long balanceId, BigDecimal amount) {
+        Balance balance = getById(balanceId);
+
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            throw new ApiRequestException("amount should not be 0");
+        }
+
+        if(balance.getDeposit().compareTo(amount) < 0) {
+            throw new ApiRequestException("insufficient funds in the account");
+        }
+
+        balance.setDeposit(amount.compareTo(BigDecimal.ZERO) < 0
+                ? balance.getDeposit().add(amount)
+                : balance.getDeposit().subtract(amount));
+
+        balanceRepository.save(balance);
+    }
+
+    @Override
+    public void makeDeposit(long balanceId, BigDecimal amount) {
+        Balance balance = getById(balanceId);
+
+        if(balance.getDeposit().compareTo(BigDecimal.ZERO) < 0 || amount.compareTo(BigDecimal.ZERO) == 0) {
+            throw new ApiRequestException("amount must be greater than 0");
+        }
+
+        balance.setDeposit(balance.getDeposit().add(amount));
+
+        balanceRepository.save(balance);
     }
 
     @Override
     public void delete(Long balanceId) {
         Balance balance = getById(balanceId);
 
-        if (balance.getDeposit() != 0) {
+        if (balance.getDeposit().compareTo(BigDecimal.ZERO) > 0) {
             throw new ApiRequestException("balance with id: " + balanceId + " not empty");
         }
 

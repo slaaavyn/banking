@@ -2,7 +2,7 @@ package tk.slaaavyn.soft.industry.banking.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import tk.slaaavyn.soft.industry.banking.dto.balance.BalanceResponseDto;
-import tk.slaaavyn.soft.industry.banking.model.Customer;
+import tk.slaaavyn.soft.industry.banking.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,19 +11,19 @@ import java.util.List;
 public class CustomerResponseDto extends UserResponseDto {
     private List<BalanceResponseDto> balanceList;
 
-    public static CustomerResponseDto toDto(Customer customer) {
+    public static CustomerResponseDto toDto(User user) {
         CustomerResponseDto dto = new CustomerResponseDto();
 
         List<BalanceResponseDto> balanceDtoList = new ArrayList<>();
-        if (customer.getBalanceList() != null) {
-            customer.getBalanceList().forEach(balance -> balanceDtoList.add(BalanceResponseDto.toDto(balance)));
+        if (user.getBalanceList() != null) {
+            user.getBalanceList().forEach(balance -> balanceDtoList.add(BalanceResponseDto.toDto(balance)));
         }
 
-        dto.setId(customer.getId());
-        dto.setEmail(customer.getEmail());
-        dto.setFirstName(customer.getFirstName());
-        dto.setLastName(customer.getLastName());
-        dto.setRole(customer.getRole());
+        dto.setId(user.getId());
+        dto.setEmail(user.getEmail());
+        dto.setFirstName(user.getFirstName());
+        dto.setLastName(user.getLastName());
+        dto.setRole(user.getRole());
         dto.setBalanceList(balanceDtoList);
 
         return dto;

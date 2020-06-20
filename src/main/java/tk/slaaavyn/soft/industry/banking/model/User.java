@@ -1,13 +1,14 @@
 package tk.slaaavyn.soft.industry.banking.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
 public class User {
     @Id
     @Column(name = "id", nullable = false, unique = true)
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Column(name = "email", nullable = false)
@@ -25,6 +26,9 @@ public class User {
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Balance> balanceList;
 
     public Long getId() {
         return id;
@@ -74,6 +78,14 @@ public class User {
         this.role = role;
     }
 
+    public List<Balance> getBalanceList() {
+        return balanceList;
+    }
+
+    public void setBalanceList(List<Balance> balanceList) {
+        this.balanceList = balanceList;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -83,6 +95,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", role=" + role +
+                ", balanceList=" + balanceList +
                 '}';
     }
 }

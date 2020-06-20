@@ -8,7 +8,6 @@ import tk.slaaavyn.soft.industry.banking.dto.user.CreateUserRequestDto;
 import tk.slaaavyn.soft.industry.banking.dto.user.CustomerResponseDto;
 import tk.slaaavyn.soft.industry.banking.dto.user.UserResponseDto;
 import tk.slaaavyn.soft.industry.banking.exceptions.ApiRequestException;
-import tk.slaaavyn.soft.industry.banking.model.Customer;
 import tk.slaaavyn.soft.industry.banking.model.User;
 import tk.slaaavyn.soft.industry.banking.security.jwt.JwtUser;
 import tk.slaaavyn.soft.industry.banking.service.UserService;
@@ -27,7 +26,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     protected ResponseEntity<UserResponseDto> create(@Valid @RequestBody CreateUserRequestDto userDto) {
         User createdUser = userService.create(userDto.fromDto());
 
@@ -58,7 +57,7 @@ public class UserController {
     @GetMapping("/customer-info")
     protected ResponseEntity<UserResponseDto> getUser() {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return ResponseEntity.ok(CustomerResponseDto.toDto((Customer) userService.getUser(jwtUser.getId())));
+        return ResponseEntity.ok(CustomerResponseDto.toDto(userService.getUser(jwtUser.getId())));
     }
 
     @DeleteMapping("{id}")

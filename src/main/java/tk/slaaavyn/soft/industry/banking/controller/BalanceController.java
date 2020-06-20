@@ -25,10 +25,10 @@ public class BalanceController {
         this.balanceService = balanceService;
     }
 
-    @PostMapping
-    protected ResponseEntity<BalanceResponseDto> create(@RequestParam long customerId,
+    @PostMapping("/create")
+    protected ResponseEntity<BalanceResponseDto> create(@RequestParam long userId,
                                                         @RequestParam CurrencyType currencyType) {
-        return ResponseEntity.ok(BalanceResponseDto.toDto(balanceService.create(customerId, currencyType)));
+        return ResponseEntity.ok(BalanceResponseDto.toDto(balanceService.create(userId, currencyType)));
     }
 
     @GetMapping("{id}")
@@ -38,7 +38,7 @@ public class BalanceController {
         Balance balance = balanceService.getById(id);
 
         if (JwtUser.userHasAuthority(jwtUser.getAuthorities(), Role.ROLE_USER.name())
-                && !jwtUser.getId().equals(balance.getCustomer().getId())) {
+                && !jwtUser.getId().equals(balance.getUser().getId())) {
             throw new ApiRequestException("user cannot get balance not belonging to his account");
         }
 
@@ -46,15 +46,15 @@ public class BalanceController {
     }
 
     @GetMapping
-    protected ResponseEntity<List<BalanceResponseDto>> getAllBalancesByCustomer(@RequestParam long customerId) {
+    protected ResponseEntity<List<BalanceResponseDto>> getAllBalancesByCustomer(@RequestParam long userId) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
         if (JwtUser.userHasAuthority(jwtUser.getAuthorities(), Role.ROLE_USER.name())
-                && jwtUser.getId() != customerId) {
+                && jwtUser.getId() != userId) {
             throw new ApiRequestException("user cannot get balance not belonging to his account");
         }
 
-        List<Balance> balanceList = balanceService.getALlCustomerBalances(customerId);
+        List<Balance> balanceList = balanceService.getALlCustomerBalances(userId);
 
         List<BalanceResponseDto> result = balanceList
                 .stream()
