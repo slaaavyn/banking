@@ -1,5 +1,7 @@
 package tk.slaaavyn.soft.industry.banking.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,10 @@ public class TransactionController {
     }
 
     @PostMapping("/deposit")
+    @ApiOperation(value = "Make deposit to balance. " +
+            "If the transferred currency is different from the balance currency, then conversion takes place. " +
+            "Action as role: ADMIN")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<TransactionResponseDto> makeDeposit(
             @Valid @RequestBody TransactionCreateRequestDto requestDto) {
 
@@ -37,6 +43,10 @@ public class TransactionController {
     }
 
     @PostMapping("/withdraw")
+    @ApiOperation(value = "Make withdraw from balance. " +
+            "If the withdrawal currency is different from the balance currency, then conversion takes place." +
+            "Action as role: ADMIN")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<TransactionResponseDto> makeWithdraw(
             @Valid @RequestBody TransactionCreateRequestDto requestDto) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
@@ -51,6 +61,11 @@ public class TransactionController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Getting all transactions for user who sent the request. " +
+            "If pass balanceId, we receive transactions only for the requested balance. " +
+            "All information only about user who sent the request" +
+            "Action as role: USER")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<List<TransactionResponseDto>> getByBalanceId(
             @RequestParam(required = false, defaultValue = "0") Long balanceId) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());

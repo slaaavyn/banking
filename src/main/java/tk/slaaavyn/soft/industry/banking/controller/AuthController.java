@@ -1,5 +1,7 @@
 package tk.slaaavyn.soft.industry.banking.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +38,7 @@ public class AuthController {
     }
 
     @PostMapping
+    @ApiOperation(value = "User authorization with email/password (token generation)")
     protected ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto requestDto) {
         if(requestDto == null || requestDto.getEmail() == null || requestDto.getPassword() == null) {
             return ResponseEntity.badRequest().build();
@@ -49,9 +52,10 @@ public class AuthController {
         return ResponseEntity.ok(generateTokenResponse(user));
     }
 
-    @PutMapping("/update-password/{id}")
-    protected ResponseEntity<Object> updatePassword(@PathVariable(name = "id") Long id,
-                                                    @Valid @RequestBody UpdateUserPasswordDto passwordDto) {
+    @PutMapping("/update-password")
+    @ApiOperation(value = "Update user password")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
+    protected ResponseEntity<Object> updatePassword(@Valid @RequestBody UpdateUserPasswordDto passwordDto) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         userService.updatePassword(jwtUser.getId(), passwordDto);
 

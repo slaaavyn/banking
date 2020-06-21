@@ -1,5 +1,7 @@
 package tk.slaaavyn.soft.industry.banking.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +28,18 @@ public class BalanceController {
     }
 
     @PostMapping("/create")
+    @ApiOperation(value = "Create new balance for user with ROLE_USER. Action as role: ADMIN")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<BalanceResponseDto> create(@RequestParam long userId,
                                                         @RequestParam CurrencyType currencyType) {
         return ResponseEntity.ok(BalanceResponseDto.toDto(balanceService.create(userId, currencyType)));
     }
 
     @GetMapping("{id}")
+    @ApiOperation(value = "Get balance info by balanceId. " +
+            "ROLE_USER cannot get balance not belonging to his account. " +
+            "Action as role: ADMIN or USER")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<BalanceResponseDto> getBalance(@PathVariable(name = "id") long id) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
@@ -46,6 +54,10 @@ public class BalanceController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Returns all balance for user, by userId. " +
+            "ROLE_USER cannot get balances not belonging to his account. " +
+            "Action as role: ADMIN or USER")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<List<BalanceResponseDto>> getAllBalancesByCustomer(@RequestParam long userId) {
         JwtUser jwtUser = ((JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 
@@ -65,6 +77,10 @@ public class BalanceController {
     }
 
     @DeleteMapping("{id}")
+    @ApiOperation(value = "Remove balance by balanceId. " +
+            "If the balance is not empty, then deletion is not possible. " +
+            "Action as role: ADMIN")
+    @ApiImplicitParam(name = "Authorization", value = "token", required = true, dataType = "string", paramType = "header")
     protected ResponseEntity<Object> deleteBalance(@PathVariable(name = "id") long id) {
         balanceService.delete(id);
         return ResponseEntity.ok().build();

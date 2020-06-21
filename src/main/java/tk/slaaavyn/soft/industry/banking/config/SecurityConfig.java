@@ -53,6 +53,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,EndpointConstants.TRANSACTION_ENDPOINT + "/**").hasRole("USER")
                 .antMatchers(EndpointConstants.TRANSACTION_ENDPOINT + "/**").authenticated()
 
+                /* SWAGGER */
+                .antMatchers("/webjars/**", "/v2/api-docs/**", "/configuration/ui/**", "/swagger-resources/**",
+                        "/configuration/security/**", "/swagger-ui.html/**", "/swagger-ui.html#/**").permitAll()
+
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
