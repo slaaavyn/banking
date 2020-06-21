@@ -82,15 +82,14 @@ public class TransactionServiceImpl implements TransactionService {
                                         TransactionType transactionType,
                                         CurrencyType transactionCurrencyType,
                                         BigDecimal amount) {
-        ExchangeRate exchangeRate = exchangeService.getExchangeRate(transactionCurrencyType);
 
         Transaction transaction = new Transaction();
 
         transaction.setBalance(balance);
         transaction.setTransactionType(transactionType);
-        transaction.setTransactionCurrencyType(exchangeRate.getCurrencyType());
+        transaction.setTransactionCurrencyType(transactionCurrencyType);
         transaction.setAmount(amount);
-        transaction.setCounted(this.calculateCountedAmount(balance, exchangeRate.getCurrencyType(), amount));
+        transaction.setCounted(this.calculateCountedAmount(balance, transactionCurrencyType, amount));
         transaction.setDeleted(false);
         transaction.setDate(new Date());
 

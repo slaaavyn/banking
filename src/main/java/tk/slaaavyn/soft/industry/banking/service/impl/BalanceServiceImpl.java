@@ -10,7 +10,6 @@ import tk.slaaavyn.soft.industry.banking.model.Role;
 import tk.slaaavyn.soft.industry.banking.model.User;
 import tk.slaaavyn.soft.industry.banking.repostitory.BalanceRepository;
 import tk.slaaavyn.soft.industry.banking.service.BalanceService;
-import tk.slaaavyn.soft.industry.banking.service.ExchangeService;
 import tk.slaaavyn.soft.industry.banking.service.UserService;
 
 import java.math.BigDecimal;
@@ -21,13 +20,10 @@ public class BalanceServiceImpl implements BalanceService {
 
     private final BalanceRepository balanceRepository;
     private final UserService userService;
-    private final ExchangeService exchangeService;
 
-    public BalanceServiceImpl(BalanceRepository balanceRepository, UserService userService,
-                              ExchangeService exchangeService) {
+    public BalanceServiceImpl(BalanceRepository balanceRepository, UserService userService) {
         this.balanceRepository = balanceRepository;
         this.userService = userService;
-        this.exchangeService = exchangeService;
     }
 
     @Override
@@ -44,7 +40,7 @@ public class BalanceServiceImpl implements BalanceService {
 
         Balance balance = new Balance();
         balance.setUser(user);
-        balance.setCurrencyType(exchangeService.getExchangeRate(currencyType).getCurrencyType());
+        balance.setCurrencyType(currencyType);
         balance.setDeposit(BigDecimal.ZERO);
 
         return balanceRepository.save(balance);

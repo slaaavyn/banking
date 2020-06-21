@@ -26,6 +26,10 @@ public class ExchangeServiceImpl implements ExchangeService {
 
     @Override
     public ExchangeRate getExchangeRate(CurrencyType currencyType) {
+        if(currencyType == baseCurrency) {
+            throw new ApiRequestException(currencyType + " is base currency");
+        }
+
         ExchangeRate exchangeRate = exchangeRates.get(currencyType);
 
         if (exchangeRate == null) {
