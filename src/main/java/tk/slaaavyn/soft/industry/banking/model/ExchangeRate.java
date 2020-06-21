@@ -3,35 +3,35 @@ package tk.slaaavyn.soft.industry.banking.model;
 import java.math.BigDecimal;
 
 public class ExchangeRate {
-    private CurrencyType ccy;
-    private CurrencyType base_ccy;
+    private CurrencyType currencyType;
+    private CurrencyType baseCurrencyType;
     private BigDecimal buy;
     private BigDecimal sale;
 
     public ExchangeRate() {
     }
 
-    public ExchangeRate(CurrencyType ccy, CurrencyType base_ccy, BigDecimal buy, BigDecimal sale) {
-        this.ccy = ccy;
-        this.base_ccy = base_ccy;
+    public ExchangeRate(CurrencyType currencyType, CurrencyType baseCurrencyType, BigDecimal buy, BigDecimal sale) {
+        this.currencyType = currencyType;
+        this.baseCurrencyType = baseCurrencyType;
         this.buy = buy;
         this.sale = sale;
     }
 
-    public CurrencyType getCcy() {
-        return ccy;
+    public CurrencyType getCurrencyType() {
+        return currencyType;
     }
 
-    public void setCcy(CurrencyType ccy) {
-        this.ccy = ccy;
+    public void setCurrencyType(CurrencyType currencyType) {
+        this.currencyType = currencyType;
     }
 
-    public CurrencyType getBase_ccy() {
-        return base_ccy;
+    public CurrencyType getBaseCurrencyType() {
+        return baseCurrencyType;
     }
 
-    public void setBase_ccy(CurrencyType base_ccy) {
-        this.base_ccy = base_ccy;
+    public void setBaseCurrencyType(CurrencyType baseCurrencyType) {
+        this.baseCurrencyType = baseCurrencyType;
     }
 
     public BigDecimal getBuy() {
@@ -53,8 +53,8 @@ public class ExchangeRate {
     @Override
     public String toString() {
         return "ExchangeRate{" +
-                "ccy=" + ccy +
-                ", base_ccy=" + base_ccy +
+                "ccy=" + currencyType +
+                ", base_ccy=" + baseCurrencyType +
                 ", buy=" + buy +
                 ", sale=" + sale +
                 '}';

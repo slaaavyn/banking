@@ -4,9 +4,13 @@ import org.springframework.stereotype.Service;
 import tk.slaaavyn.soft.industry.banking.exceptions.ApiRequestException;
 import tk.slaaavyn.soft.industry.banking.exceptions.ConflictException;
 import tk.slaaavyn.soft.industry.banking.exceptions.NotFoundException;
-import tk.slaaavyn.soft.industry.banking.model.*;
+import tk.slaaavyn.soft.industry.banking.model.Balance;
+import tk.slaaavyn.soft.industry.banking.model.CurrencyType;
+import tk.slaaavyn.soft.industry.banking.model.Role;
+import tk.slaaavyn.soft.industry.banking.model.User;
 import tk.slaaavyn.soft.industry.banking.repostitory.BalanceRepository;
 import tk.slaaavyn.soft.industry.banking.service.BalanceService;
+import tk.slaaavyn.soft.industry.banking.service.ExchangeService;
 import tk.slaaavyn.soft.industry.banking.service.UserService;
 
 import java.math.BigDecimal;
@@ -17,10 +21,13 @@ public class BalanceServiceImpl implements BalanceService {
 
     private final BalanceRepository balanceRepository;
     private final UserService userService;
+    private final ExchangeService exchangeService;
 
-    public BalanceServiceImpl(BalanceRepository balanceRepository, UserService userService) {
+    public BalanceServiceImpl(BalanceRepository balanceRepository, UserService userService,
+                              ExchangeService exchangeService) {
         this.balanceRepository = balanceRepository;
         this.userService = userService;
+        this.exchangeService = exchangeService;
     }
 
     @Override
@@ -37,7 +44,7 @@ public class BalanceServiceImpl implements BalanceService {
 
         Balance balance = new Balance();
         balance.setUser(user);
-        balance.setCurrencyType(currencyType);
+        balance.setCurrencyType(exchangeService.getExchangeRate(currencyType).getCurrencyType());
         balance.setDeposit(BigDecimal.ZERO);
 
         return balanceRepository.save(balance);

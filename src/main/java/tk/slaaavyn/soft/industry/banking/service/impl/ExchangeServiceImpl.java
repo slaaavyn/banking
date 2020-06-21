@@ -1,17 +1,18 @@
 package tk.slaaavyn.soft.industry.banking.service.impl;
 
+import com.google.common.base.Enums;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tk.slaaavyn.soft.industry.banking.dto.ExchangeRateFromPbDto;
+import tk.slaaavyn.soft.industry.banking.exceptions.ApiRequestException;
 import tk.slaaavyn.soft.industry.banking.model.CurrencyType;
 import tk.slaaavyn.soft.industry.banking.model.ExchangeRate;
 import tk.slaaavyn.soft.industry.banking.service.ExchangeService;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ExchangeServiceImpl implements ExchangeService {
@@ -24,6 +25,22 @@ public class ExchangeServiceImpl implements ExchangeService {
     }
 
     @Override
+    public ExchangeRate getExchangeRate(CurrencyType currencyType) {
+        ExchangeRate exchangeRate = exchangeRates.get(currencyType);
+
+        if (exchangeRate == null) {
+            throw new ApiRequestException(currencyType + " is not supported");
+        }
+
+        return exchangeRate;
+    }
+
+    @Override
+    public List<ExchangeRate> getAllRates() {
+        return new ArrayList<>(exchangeRates.values());
+    }
+
+    @Override
     public BigDecimal exchange(CurrencyType fromCurrency, CurrencyType toCurrency, BigDecimal amount) throws Exception {
         if (fromCurrency == toCurrency) {
             throw new Exception("from and to currencies should be different");
@@ -33,28 +50,28 @@ public class ExchangeServiceImpl implements ExchangeService {
         ExchangeRate toExchangeRate = exchangeRates.get(toCurrency);
 
         // conversion TO base currency
-        if (fromExchangeRate != null && fromExchangeRate.getBase_ccy() == toCurrency) {
+        if (fromExchangeRate != null && fromExchangeRate.getBaseCurrencyType() == toCurrency) {
             return exchangeToBaseCurrency(fromExchangeRate, amount);
         }
 
         // conversion FROM base currency
-        if (toExchangeRate != null && exchangeRates.get(toCurrency).getBase_ccy() == fromCurrency) {
+        if (toExchangeRate != null && exchangeRates.get(toCurrency).getBaseCurrencyType() == fromCurrency) {
             return exchangeFromBaseCurrency(toExchangeRate, amount);
         }
 
         // double conversion
         ExchangeRate exchangeRate = fromExchangeRate;
-        while (exchangeRate.getCcy() != toCurrency) {
-            amount = exchange(exchangeRate.getCcy(), exchangeRate.getBase_ccy(), amount);
+        while (exchangeRate.getCurrencyType() != toCurrency) {
+            amount = exchange(exchangeRate.getCurrencyType(), exchangeRate.getBaseCurrencyType(), amount);
 
-            if(exchangeRates.get(exchangeRate.getBase_ccy()) != null) {
-                exchangeRate = exchangeRates.get(exchangeRate.getBase_ccy());
+            if(exchangeRates.get(exchangeRate.getBaseCurrencyType()) != null) {
+                exchangeRate = exchangeRates.get(exchangeRate.getBaseCurrencyType());
             } else {
                 exchangeRate = exchangeRates.get(toCurrency);
             }
         }
 
-        return exchange(exchangeRate.getBase_ccy(), exchangeRate.getCcy(), amount);
+        return exchange(exchangeRate.getBaseCurrencyType(), exchangeRate.getCurrencyType(), amount);
     }
 
     private BigDecimal exchangeToBaseCurrency(ExchangeRate exchangeRate, BigDecimal amount) {
@@ -75,14 +92,15 @@ public class ExchangeServiceImpl implements ExchangeService {
         HttpEntity request = new HttpEntity(headers);
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<ExchangeRate[]> response =
-                restTemplate.exchange(url, HttpMethod.GET, request, ExchangeRate[].class);
+        ResponseEntity<ExchangeRateFromPbDto[]> response =
+                restTemplate.exchange(url, HttpMethod.GET, request, ExchangeRateFromPbDto[].class);
 
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             // parse response
-            for (ExchangeRate exchangeRate : response.getBody()) {
-                if(exchangeRate.getBase_ccy() == baseCurrency) {
-                    exchangeRates.put(exchangeRate.getCcy(), exchangeRate);
+            for (ExchangeRateFromPbDto exchangeRateDto : response.getBody()) {
+                if (Enums.getIfPresent(CurrencyType.class, exchangeRateDto.getBase_ccy()).orNull() == baseCurrency) {
+                    ExchangeRate exchangeRate = exchangeRateDto.fromDto();
+                    exchangeRates.put(exchangeRate.getCurrencyType(), exchangeRate);
                 }
             }
         } else {
