@@ -39,11 +39,7 @@ public class AuthController {
 
     @PostMapping
     @ApiOperation(value = "User authorization with email/password (token generation)")
-    protected ResponseEntity<AuthResponseDto> login(@RequestBody AuthRequestDto requestDto) {
-        if(requestDto == null || requestDto.getEmail() == null || requestDto.getPassword() == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
+    protected ResponseEntity<AuthResponseDto> login(@Valid @RequestBody AuthRequestDto requestDto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
 
@@ -63,7 +59,7 @@ public class AuthController {
     }
 
     private AuthResponseDto generateTokenResponse(User user) {
-        Date tokenExpired = new Date(new Date().getTime() + 86400000);
+        Date tokenExpired = new Date(new Date().getTime() + SecurityConstants.TOKEN_VALIDITY_TIME);
 
         String token = SecurityConstants.TOKEN_PREFIX +
                 jwtTokenProvider.createToken(user.getEmail(), Collections.singletonList(user.getRole().name()));
