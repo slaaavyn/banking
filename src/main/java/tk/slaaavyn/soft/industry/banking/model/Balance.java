@@ -26,6 +26,10 @@ public class Balance {
     @OneToMany(mappedBy = "balance", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Transaction> transactionList;
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version;
+
     public Long getId() {
         return id;
     }
@@ -66,6 +70,14 @@ public class Balance {
         this.transactionList = transactionList;
     }
 
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "Balance{" +
@@ -73,6 +85,8 @@ public class Balance {
                 ", deposit=" + deposit +
                 ", user=" + user +
                 ", currencyType=" + currencyType +
+                ", transactionList=" + transactionList +
+                ", version=" + version +
                 '}';
     }
 }

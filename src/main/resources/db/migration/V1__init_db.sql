@@ -3,6 +3,7 @@
     currency_type varchar(255) not null,
     deposit decimal(19,2) not null,
     user_id bigint not null,
+    version bigint not null,
     primary key (id)
 );
 

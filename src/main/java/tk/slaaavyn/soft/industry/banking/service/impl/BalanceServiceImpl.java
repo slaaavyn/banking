@@ -1,6 +1,9 @@
 package tk.slaaavyn.soft.industry.banking.service.impl;
 
+import org.hibernate.StaleStateException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.slaaavyn.soft.industry.banking.exceptions.ApiRequestException;
 import tk.slaaavyn.soft.industry.banking.exceptions.ConflictException;
 import tk.slaaavyn.soft.industry.banking.exceptions.NotFoundException;
@@ -63,6 +66,8 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
+    @Retryable(StaleStateException.class)
+    @Transactional
     public void makeWithdraw(long balanceId, BigDecimal amount) {
         Balance balance = getById(balanceId);
 
@@ -82,6 +87,8 @@ public class BalanceServiceImpl implements BalanceService {
     }
 
     @Override
+    @Retryable(StaleStateException.class)
+    @Transactional
     public void makeDeposit(long balanceId, BigDecimal amount) {
         Balance balance = getById(balanceId);
 
