@@ -5,7 +5,6 @@ import tk.slaaavyn.soft.industry.banking.model.CurrencyType;
 import tk.slaaavyn.soft.industry.banking.model.Transaction;
 import tk.slaaavyn.soft.industry.banking.model.TransactionType;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -19,9 +18,8 @@ public class TransactionResponseDto {
     private BigDecimal counted;
     private CurrencyType transactionCurrencyType;
     private CurrencyType balanceCurrencyType;
-
-    @Column(name = "deleted", nullable = false)
     private Boolean deleted;
+
     public static TransactionResponseDto toDto(Transaction transaction) {
         TransactionResponseDto dto = new TransactionResponseDto();
 
@@ -33,6 +31,7 @@ public class TransactionResponseDto {
         dto.setCounted(transaction.getCounted());
         dto.setTransactionCurrencyType(transaction.getTransactionCurrencyType());
         dto.setBalanceCurrencyType(transaction.getBalance().getCurrencyType());
+        dto.setDeleted(transaction.getDeleted());
 
         return dto;
     }
